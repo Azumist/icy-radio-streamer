@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class
+	name="IcyHttpStream"
+	inherits="RefCounted"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd"
+>
+	<brief_description>
+		Handles HTTP requests and continuous audio streaming from Icecast servers.
+	</brief_description>
+
+	<description>
+		[IcyHttpStream] establishes HTTP connections to Icecast-compatible servers and continuously downloads streaming audio data on a dedicated thread.
+		If an AudioDecoder is assigned, downloaded data chunks are forwarded to it for decoding. Otherwise, the stream remains active and incoming data is discarded.
+		The class can optionally parse ICY metadata embedded in the stream and emits signals for connection state changes and metadata updates.
+	</description>
+
+	<tutorials>
+	</tutorials>
+
+	<signals>
+		<signal name="connection_opened">
+			<description>
+				Emitted when a connection to the streaming server has been successfully established and data reception begins.
+			</description>
+		</signal>
+
+		<signal name="connection_closed">
+			<description>
+				Emitted when the connection is closed, either intentionally or due to an error. [param result] contains a [enum Result] value describing the reason the connection was closed.
+			</description>
+		</signal>
+
+		<signal name="metadata_received">
+			<description>
+				Emitted when ICY metadata is received from the server. The format and contents of [param metadata] depend on the metadata provided by the stream.
+			</description>
+		</signal>
+	</signals>
+
+	<methods>
+		<method name="request">
+			<return type="void" />
+
+			<param index="0" name="url" type="String" />
+			<param index="1" name="timeout" type="float" default="5.0" />
+			<param index="2" name="parse_metadata" type="bool" default="false" />
+			<param
+				index="3"
+				name="custom_headers"
+				type="PackedStringArray"
+				default="PackedStringArray()"
+			/>
+
+			<description>
+				Sends an HTTP GET request to [param url] and attempts to establish a streaming connection.
+				If the connection succeeds, the stream begins downloading data continuously on a dedicated thread until the connection is closed or interrupted.
+				[param url] specifies the URL of the Icecast stream.
+				[param timeout] specifies the connection timeout in seconds.
+				If [param parse_metadata] is [code]true[/code], ICY metadata embedded in the stream is parsed and exposed through the appropriate signals.
+				[param custom_headers] specifies additional HTTP headers to include in the request such as user agent or bearer token. Each entry must be formatted as [code]"Header-Name: Value"[/code].
+			</description>
+		</method>
+
+		<method name="cancel_request">
+			<return type="void" />
+
+			<description>
+				Cancels the active request or stream, if one exists.
+			</description>
+		</method>
+
+		<method name="is_requesting">
+			<return type="void" />
+
+			<description>
+				Returns [code]true[/code] if a request is currently active or data is being streamed.
+			</description>
+		</method>
+
+		<method name="get_content_mime_type">
+			<return type="String" />
+
+			<description>
+				Returns the MIME type of the streamed media. (e.g [code]"audio/mpeg"[/code] for MP3 streams)
+			</description>
+		</method>
+
+		<method name="get_response_headers">
+			<return type="PackedStringArray" />
+
+			<description>
+				Returns the raw HTTP response headers.
+			</description>
+		</method>
+
+		<method name="get_response_headers_as_dictionary">
+			<return type="Dictionary" />
+
+			<description>
+				Returns the HTTP response headers as a key-value [Dictionary].
+			</description>
+		</method>
+	</methods>
+</class>
