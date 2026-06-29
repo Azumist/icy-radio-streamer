@@ -6,6 +6,7 @@
 #include "godot_cpp/variant/packed_string_array.hpp"
 #include "godot_cpp/classes/time.hpp"
 #include "godot_cpp/classes/os.hpp"
+#include <mutex>
 
 using namespace godot;
 
@@ -26,6 +27,8 @@ void IcyHttpStream::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_content_mime_type"), &IcyHttpStream::get_content_mime_type);
 	ClassDB::bind_method(D_METHOD("get_response_headers"), &IcyHttpStream::get_response_headers);
 	ClassDB::bind_method(D_METHOD("get_response_headers_as_dictionary"), &IcyHttpStream::get_response_headers_as_dictionary);
+	ClassDB::bind_method(D_METHOD("get_downloaded_bytes"), &IcyHttpStream::get_downloaded_bytes);
+	ClassDB::bind_method(D_METHOD("set_audio_decoder", "audio_decoder"), &IcyHttpStream::set_audio_decoder);
 
 	ADD_SIGNAL(MethodInfo("connection_opened"));
 	ADD_SIGNAL(MethodInfo("connection_closed", PropertyInfo(Variant::INT, "result")));
@@ -165,14 +168,18 @@ String IcyHttpStream::get_content_mime_type() const {
 	return content_type;
 }
 
-// void ThreadedHttpReq::set_decoder(const Ref<AudioDecoder> p_decoder) {
-//	TODO
-// }
+void IcyHttpStream::set_audio_decoder(const Ref<IcyAudioDecoder> p_decoder) {
+	std::lock_guard<std::mutex> lock(decoder_mutex);
+	audio_decoder = p_decoder;
+}
 
 PackedStringArray IcyHttpStream::get_response_headers() const {
 	return response_headers;
 }
 
+int IcyHttpStream::get_downloaded_bytes() const {
+	return downloaded.get();
+}
 
 Dictionary IcyHttpStream::get_response_headers_as_dictionary() const {
 	Dictionary dict;
@@ -300,7 +307,7 @@ bool IcyHttpStream::_handle_response(bool *ret_value) {
 
 		String new_request;
 		for (int i = 0; i < response_headers.size(); ++i) {
-			if (request_headers[i].to_lower().begins_with("location: ")) {
+			if (response_headers[i].to_lower().begins_with("location: ")) {
 				new_request = response_headers[i].substr(10).strip_edges();
 			}
 		}
@@ -424,7 +431,11 @@ void IcyHttpStream::_defer_done(int p_status) {
 }
 
 void IcyHttpStream::_defer_data(const PackedByteArray &p_data) {
-	//TODO decode
+	std::lock_guard<std::mutex> lock(decoder_mutex);
+
+	if (audio_decoder.is_valid()) {
+		audio_decoder->push_encoded_data(p_data);
+	}
 }
 
 void IcyHttpStream::_defer_metadata(const String &p_meta) {

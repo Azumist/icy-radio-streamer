@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class
+	name="IcyAudioDecoder"
+	inherits="RefCounted"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd"
+>
+	<brief_description>
+		Generic audio decoder class providing a common interface for audio stream decoders with buffering support.
+	</brief_description>
+
+	<description>
+		[IcyAudioDecoder] is a generic audio decoder base class that provides a common interface for audio stream decoders.
+		It manages interaction with an [AudioStreamGeneratorPlayback] instance and provides a standardized buffering mechanism, including configurable buffer thresholds, buffering state tracking, and notifications when buffering starts or finishes.
+
+		[b]Note:[/b] Derived classes are expected to implement the actual decoding logic.
+	</description>
+
+	<tutorials>
+	</tutorials>
+
+	<signals>
+		<signal name="buffering_started">
+			<description>
+				Emitted when the buffered audio data has been depleted and the decoder enters the buffering state.
+			</description>
+		</signal>
+
+		<signal name="buffering_finished">
+			<description>
+				Emitted when the buffered audio data reaches the configured target threshold and buffering completes.
+			</description>
+		</signal>
+	</signals>
+
+	<methods>
+		<method name="set_playback">
+			<return type="void" />
+			<param index="0" name="playback" type="AudioStreamGeneratorPlayback" />
+			<description>
+				Sets the [AudioStreamGeneratorPlayback] instance used by the decoder for buffer management. This playback object is used to determine the current buffering state and available audio frames.
+			</description>
+		</method>
+
+		<method name="set_buffer_thresholds">
+			<return type="void" />
+			<param index="0" name="target_frames" type="int" />
+			<param index="1" name="max_capacity_frames" type="int" />
+			<description>
+				Configures the buffering thresholds used by the decoder.
+				[code]target_frames[/code] specifies the number of buffered frames required before buffering is considered complete, while [code]max_capacity_frames[/code] specifies the maximum expected buffer capacity.
+			</description>
+		</method>
+
+		<method name="process_audio">
+			<return type="void" />
+			<description>
+				Processes decoder-specific audio handling and moves raw audio frame data into the [AudioStreamGeneratorPlayback]'s ring buffer.
+				[b]Note:[/b] This method is intended to be implemented by derived decoder classes.
+			</description>
+		</method>
+
+		<method name="get_buffering_progress" qualifiers="const">
+			<return type="float" />
+			<description>
+				Returns the current buffering progress as a value between [code]0.0[/code] and [code]1.0[/code].
+			</description>
+		</method>
+
+		<method name="is_buffering" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns [code]true[/code] if the decoder is currently buffering audio data, otherwise returns [code]false[/code].
+			</description>
+		</method>
+
+		<method name="get_current_target_frames" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the current target number of buffered frames required before playback can resume after buffering.
+			</description>
+		</method>
+
+		<method name="get_current_max_capacity_frames" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the configured maximum buffer capacity, expressed in audio frames.
+			</description>
+		</method>
+	</methods>
+</class>

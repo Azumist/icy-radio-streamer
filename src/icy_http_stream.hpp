@@ -6,6 +6,7 @@
 #include "godot_cpp/classes/thread.hpp"
 #include "godot_cpp/core/binder_common.hpp"
 #include "godot_cpp/variant/packed_string_array.hpp"
+#include "icy_audio_decoder.hpp"
 
 namespace godot {
 
@@ -36,7 +37,7 @@ private:
 	Ref<HTTPClient> client;
 	Ref<TLSOptions> tls_options;
 	Ref<Thread> thread;
-	// Ref<AudioDecoder> audio_decoder; TODO
+	Ref<IcyAudioDecoder> audio_decoder;
 
 	String request_string;
 	String url;
@@ -90,9 +91,10 @@ public:
 	void cancel_request();
 	bool is_requesting() const;
 	String get_content_mime_type() const;
-	// void set_decoder() TODO
+	void set_audio_decoder(const Ref<IcyAudioDecoder> p_decoder);
 	PackedStringArray get_response_headers() const;
 	Dictionary get_response_headers_as_dictionary() const;
+	int get_downloaded_bytes() const;
 };
 
 }

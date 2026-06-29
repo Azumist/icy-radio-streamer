@@ -101,5 +101,23 @@
 				Returns the HTTP response headers as a key-value [Dictionary].
 			</description>
 		</method>
+
+		<method name="get_downloaded_bytes">
+			<return type="int" />
+
+			<description>
+				Returns the amount of bytes downloaded from the beginning of the stream.
+			</description>
+		</method>
+
+		<method name="set_audio_decoder">
+			<return type="void" />
+
+			<param index="0" name="audio_decoder" type="IcyAudioDecoder" />
+
+			<description>
+				Sets audio decoder to which downloaded data chunks will be forwarded.
+			</description>
+		</method>
 	</methods>
 </class>

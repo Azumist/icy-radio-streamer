@@ -5,6 +5,8 @@
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
+#include "icy_audio_decoder.hpp"
+#include "icy_mp3_audio_decoder.hpp"
 #include "icy_http_stream.hpp"
 
 using namespace godot;
@@ -14,6 +16,8 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level)
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
+	GDREGISTER_ABSTRACT_CLASS(IcyAudioDecoder);
+	GDREGISTER_CLASS(IcyMp3AudioDecoder);
 	GDREGISTER_CLASS(IcyHttpStream);
 }
 
