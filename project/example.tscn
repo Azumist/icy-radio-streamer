@@ -11,3 +11,5 @@ radio_player = NodePath("Radio")
 
 [node name="Radio" type="AudioStreamPlayer" parent="."]
 stream = SubResource("AudioStreamGenerator_2jas5")
+
+[node name="Timer" type="Timer" parent="."]

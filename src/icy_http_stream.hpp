@@ -22,7 +22,8 @@ public:
         RESULT_TIMEOUT,
         RESULT_REQUEST_FAILED,
         RESULT_REDIRECT_LIMIT_REACHED,
-        RESULT_DISCONNECTED
+        RESULT_DISCONNECTED,
+        RESULT_CANCELLED
 	};
 
 private:
@@ -62,6 +63,7 @@ private:
 
 	SafeFlag thread_done;
 	SafeFlag thread_request_quit;
+	SafeFlag result_emitted;
 	bool use_tls = false;
 	bool requesting = false;
 	bool got_response = false;

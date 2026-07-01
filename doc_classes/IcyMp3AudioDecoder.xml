@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class
+	name="IcyMp3AudioDecoder"
+	inherits="IcyAudioDecoder"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd"
+>
+	<brief_description>
+ 		Audio decoder implementation for MP3 streams.
+	</brief_description>
+
+	<description>
+		[IcyMp3AudioDecoder] implements live decoding of MP3 streams (MIME type [code]audio/mpeg[/code]).
+	</description>
+
+	<tutorials>
+	</tutorials>
+
+	<signals>
+		<signal name="stream_info_ready">
+			<description>
+				Emitted when the decoder has read enough of the MP3 stream to determine its sample rate and channel count.
+			</description>
+		</signal>
+	</signals>
+
+	<methods>
+		<method name="set_bitrate_hint">
+			<return type="void" />
+			<param index="0" name="kbps" type="int" />
+			<description>
+				Calculates the byte threshold required for the decoder to begin decoding audio data based on the specified [code]kbps[/code] value. If this method is not called, the decoder assumes a default bitrate of 128 kbps. The threshold is calculated using the formula [code](kbps * 1000) / 8[/code].
+			</description>
+		</method>
+
+		<method name="get_stream_sample_rate" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the sample rate of the incoming stream.
+			</description>
+		</method>
+
+		<method name="get_stream_channels" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the channel count of the incoming stream.
+			</description>
+		</method>
+	</methods>
+</class>

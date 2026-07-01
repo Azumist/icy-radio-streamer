@@ -42,6 +42,7 @@ void IcyHttpStream::_bind_methods() {
     BIND_ENUM_CONSTANT(RESULT_REQUEST_FAILED);
     BIND_ENUM_CONSTANT(RESULT_REDIRECT_LIMIT_REACHED);
     BIND_ENUM_CONSTANT(RESULT_DISCONNECTED);
+    BIND_ENUM_CONSTANT(RESULT_CANCELLED);
 }
 
 Error IcyHttpStream::_parse_url(const String &p_url) {
@@ -139,6 +140,7 @@ Error IcyHttpStream::request(const String &p_url, real_t p_timeout, bool p_parse
 	requesting = true;
 	thread_done.clear();
 	thread_request_quit.clear();
+	result_emitted.clear();
 	client->set_blocking_mode(true);
 
 	thread->start(callable_mp(this, &IcyHttpStream::_thread_func));
@@ -158,6 +160,10 @@ void IcyHttpStream::cancel_request() {
 	requesting = false;
 	got_response = false;
 	response_code = 0;
+
+	if (!result_emitted.is_set()) {
+		_defer_done(RESULT_CANCELLED);
+	}
 }
 
 bool IcyHttpStream::is_requesting() const {
@@ -426,6 +432,7 @@ void IcyHttpStream::_defer_connected() {
 }
 
 void IcyHttpStream::_defer_done(int p_status) {
+	result_emitted.set();
 	call_deferred("emit_signal", "connection_closed", p_status);
 	thread_request_quit.set();
 }
