@@ -1,8 +1,13 @@
 # Godot auto generated files
 *.gen.*
 .godot/
+/project/.import/
+/project/.godot/
+export.cfg
+export_presets.cfg
 
 # Ignore library files but not the gdextension file
+/bin/**
 project/bin/**
 !project/bin/*.gdextension
 
