@@ -114,17 +114,32 @@ jobs:
     needs: merge
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - name: Download merged artifact (project/bin contents)
+      - name: Download merged artifact (staging)
         uses: actions/download-artifact@v4
         with:
           name: icy-radio-streamer
-          path: package/addons/icy-radio-streamer/bin
+          path: staging
 
-      - name: Move .gdextension config to addon root
+      - name: Sort binaries into per-platform folders
         shell: sh
         run: |
-          mv package/addons/icy-radio-streamer/bin/icy_radio_streamer.gdextension package/addons/icy-radio-streamer/
-          mv package/addons/icy-radio-streamer/bin/icy_radio_streamer.gdextension.uid package/addons/icy-radio-streamer/ 2>/dev/null || true
+          set -e
+          base=package/addons/icy-radio-streamer
+          mkdir -p "$base"/{macos,ios,windows,linux,android,web}
+
+          cd staging
+          for f in *; do
+            case "$f" in
+              *.gdextension|*.gdextension.uid) mv "$f" "../$base/" ;;
+              *.macos.*)   mv "$f" "../$base/macos/" ;;
+              *.ios.*)     mv "$f" "../$base/ios/" ;;
+              *.windows.*) mv "$f" "../$base/windows/" ;;
+              *.linux.*)   mv "$f" "../$base/linux/" ;;
+              *.android.*) mv "$f" "../$base/android/" ;;
+              *.web.*)     mv "$f" "../$base/web/" ;;
+              *) echo "WARNING: unrecognized file, not sorted: $f" ;;
+            esac
+          done
 
       - name: Zip release package
         run: |
