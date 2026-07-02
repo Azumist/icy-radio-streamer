@@ -2,7 +2,7 @@
 
 # IcyRadioStreamer
 
-A GDExtension plugin for streaming IceCast streams inside the Godot 4.x game engine.
+A GDExtension plugin for receiving IceCast streams inside the Godot 4.x game engine.
 
 ## Features
 
