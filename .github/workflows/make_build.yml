@@ -1,9 +1,14 @@
 # For syntax, see https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
-# This workflow is triggered manually on the "Actions" tab on GitHub, and can be used to create releases.
 
 name: Make a GDExtension build for all supported platforms
 on:
   workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write # needed so the release job can create a GitHub Release
 
 jobs:
   build:
@@ -80,17 +85,17 @@ jobs:
         if: ${{ matrix.target.platform == 'windows' }}
         shell: pwsh
         run: |
-          Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
+          Remove-Item project/bin/* -Include *.exp,*.lib,*.pdb -Force
 
       # Upload the build
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: godot-cpp-template-${{ matrix.target.platform }}-${{ matrix.target.arch }}-${{ matrix.float-precision }}-${{ matrix.target-type }}
+          name: icy-radio-streamer-${{ matrix.target.platform }}-${{ matrix.target.arch }}-${{ matrix.float-precision }}-${{ matrix.target-type }}
           path: |
-            ${{ github.workspace }}/bin/**
+            ${{ github.workspace }}/project/bin/**
 
-  # Merges all the build artifacts together into a single godot-cpp-template artifact.
+  # Merges all the build artifacts together into a single icy-radio-streamer artifact.
   # If you comment out this step, all the builds will be uploaded individually.
   merge:
     runs-on: ubuntu-22.04
@@ -99,6 +104,37 @@ jobs:
       - name: Merge Artifacts
         uses: actions/upload-artifact/merge@v4
         with:
-          name: godot-cpp-template
-          pattern: godot-cpp-template-*
+          name: icy-radio-streamer
+          pattern: icy-radio-streamer-*
           delete-merged: true
+
+  # Creates a GitHub Release and attaches the merged build whenever a "v*" tag is pushed.
+  release:
+    runs-on: ubuntu-22.04
+    needs: merge
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download merged artifact (project/bin contents)
+        uses: actions/download-artifact@v4
+        with:
+          name: icy-radio-streamer
+          path: package/bin
+
+      - name: Move .gdextension config to package root
+        shell: sh
+        run: |
+          mv package/bin/icy_radio_streamer.gdextension package/
+          mv package/bin/icy_radio_streamer.gdextension.uid package/ 2>/dev/null || true
+
+      - name: Zip release package
+        run: |
+          cd package
+          zip -r ../icy-radio-streamer-${{ github.ref_name }}.zip .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: icy-radio-streamer-${{ github.ref_name }}.zip
