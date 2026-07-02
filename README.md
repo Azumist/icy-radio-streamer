@@ -1,3 +1,5 @@
+<p align="center" width="100%"><img src="radio.svg"></p>
+
 # IcyRadioStreamer
 
 A GDExtension plugin for streaming IceCast streams inside the Godot 4.x game engine.
