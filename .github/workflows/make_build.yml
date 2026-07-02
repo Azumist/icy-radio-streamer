@@ -118,13 +118,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: icy-radio-streamer
-          path: package/bin
+          path: package/addons/icy-radio-streamer/bin
 
-      - name: Move .gdextension config to package root
+      - name: Move .gdextension config to addon root
         shell: sh
         run: |
-          mv package/bin/icy_radio_streamer.gdextension package/
-          mv package/bin/icy_radio_streamer.gdextension.uid package/ 2>/dev/null || true
+          mv package/addons/icy-radio-streamer/bin/icy_radio_streamer.gdextension package/addons/icy-radio-streamer/
+          mv package/addons/icy-radio-streamer/bin/icy_radio_streamer.gdextension.uid package/addons/icy-radio-streamer/ 2>/dev/null || true
 
       - name: Zip release package
         run: |
