@@ -7,13 +7,7 @@ compatibility_minimum = 4.3
 
 linux.debug.x86_64 = "bin/libicy_radio_streamer.linux.debug.x86_64.so"
 linux.release.x86_64 = "bin/libicy_radio_streamer.linux.release.x86_64.so"
-linux.debug.arm64 = "bin/libicy_radio_streamer.linux.debug.arm64.so"
-linux.release.arm64 = "bin/libicy_radio_streamer.linux.release.arm64.so"
-linux.debug.rv64 = "bin/libicy_radio_streamer.linux.debug.rv64.so"
-linux.release.rv64 = "bin/libicy_radio_streamer.linux.release.rv64.so"
 windows.debug.x86_64 = "bin/libicy_radio_streamer.windows.debug.x86_64.dll"
 windows.release.x86_64 = "bin/libicy_radio_streamer.windows.release.x86_64.dll"
-macos.debug = "bin/libicy_radio_streamer.macos.debug.framework"
-macos.release = "bin/libicy_radio_streamer.macos.release.framework"
 android.debug.arm64 = "bin/libicy_radio_streamer.android.debug.arm64.so"
 android.release.arm64 = "bin/libicy_radio_streamer.android.release.arm64.so"
