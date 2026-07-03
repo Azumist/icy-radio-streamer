@@ -21,7 +21,7 @@ At present, the plugin includes an MP3 decoder implementation. Support for addit
 To see the plugin in action, check out the example script at:
 
 ```text
-project/example.gd
+project/addons/icy-radio-streamer/example.gd
 ```
 
 ## Overview
