@@ -1,57 +1,28 @@
-# Godot auto generated files
-*.gen.*
-.godot/
+# addon
+project/addons/icy-radio-streamer/bin/
+src/*.obj
+
+# Godot-cpp
+src/gen/
+compile_commands.json
+
+# Godot-specific ignores (Include script cache. See godot issue #75388)
 /project/.import/
 /project/.godot/
 export.cfg
 export_presets.cfg
 
-# Ignore library files but not the gdextension file
-/bin/**
-project/bin/**
-!project/bin/*.gdextension
-
-# Ignore scons database
-.sconsign*.dblite
-
-# Ignore custom.py
-custom.py
-
-# Ignore generated compile_commands.json
-compile_commands.json
-
-# Ignore files generated for documentation
-/src/gen
-
-# Binaries
-*.o
+# Objects.
+.scons-cache/
 *.os
-*.so
-*.obj
-*.bc
+
+# SConstruct
+.sconf_temp
+.sconsign.dblite
 *.pyc
-*.dblite
-*.pdb
-*.lib
-*.config
-*.creator
-*.creator.user
-*.files
-*.includes
-*.idb
-*.exp
 
-# Other stuff
-*.log
-
-# VSCode
-.vscode/*
-!.vscode/extensions.json
+# MacOS
 .DS_Store
 
-# Jetbrains
-.idea/
-
-# Cmake
-cmake-build*
-CMakeUserPresets.json
+# Editors
+.vscode/

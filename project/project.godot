@@ -12,4 +12,4 @@ config_version=5
 
 config/name="icy radio streamer example"
 config/features=PackedStringArray("4.5", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="res://radio.svg"

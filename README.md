@@ -1,4 +1,4 @@
-<p align="center" width="100%"><img src="radio.svg"></p>
+<p align="center" width="100%"><img src="project/radio.svg"></p>
 
 # IcyRadioStreamer
 

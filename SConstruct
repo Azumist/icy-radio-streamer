@@ -1,67 +1,52 @@
 #!/usr/bin/env python
 import os
-import sys
+from glob import glob
+from pathlib import Path
 
-from methods import print_error
+# TODO: Do not copy environment after godot-cpp/test is updated <https://github.com/godotengine/godot-cpp/blob/master/test/SConstruct>.
+env = SConscript("godot-cpp/SConstruct")
 
-libname = "icy-radio-streamer"
-projectdir = "project"
-
-localEnv = Environment(tools=["default"], PLATFORM="")
-
-# Build profiles can be used to decrease compile times.
-# You can either specify "disabled_classes", OR
-# explicitly specify "enabled_classes" which disables all other classes.
-# Modify the example file as needed and uncomment the line below or
-# manually specify the build_profile parameter when running SCons.
-
-# localEnv["build_profile"] = "build_profile.json"
-
-customs = ["custom.py"]
-customs = [os.path.abspath(path) for path in customs]
-
-opts = Variables(customs, ARGUMENTS)
-opts.Update(localEnv)
-
-Help(opts.GenerateHelpText(localEnv))
-
-env = localEnv.Clone()
-
-if not (os.path.isdir("godot-cpp") and os.listdir("godot-cpp")):
-    print_error("""godot-cpp is not available within this folder, as Git submodules haven't been initialized.
-Run the following command to download godot-cpp:
-
-    git submodule update --init --recursive""")
-    sys.exit(1)
-
-env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
-
+# Add source files.
 env.Append(CPPPATH=["src/"])
 sources = Glob("src/*.cpp") + Glob("src/thirdparty/*.cpp")
 
-if env["target"] in ["editor", "template_debug"]:
-    try:
-        doc_data = env.GodotCPPDocData(
-            "src/gen/doc_data.gen.cpp", source=Glob("doc_classes/*.xml")
-        )
-        sources.append(doc_data)
-    except AttributeError:
-        print("Not including class reference as we're targeting a pre-4.3 baseline.")
+# Find gdextension path even if the directory or extension is renamed (e.g. project/addons/example/example.gdextension).
+(extension_path,) = glob("project/addons/*/*.gdextension")
 
-# .dev doesn't inhibit compatibility, so we don't need to key it.
-# .universal just means "compatible with all relevant arches" so we don't need to key it.
-suffix = env["suffix"].replace(".dev", "").replace(".universal", "")
+# Get the addon path (e.g. project/addons/example).
+addon_path = Path(extension_path).parent
 
-lib_filename = "{}{}{}{}".format(
-    env.subst("$SHLIBPREFIX"), libname, suffix, env.subst("$SHLIBSUFFIX")
-)
+# Get the project name from the gdextension file (e.g. example).
+project_name = Path(extension_path).stem
 
-library = env.SharedLibrary(
-    "bin/{}/{}".format(env["platform"], lib_filename),
-    source=sources,
-)
+scons_cache_path = os.environ.get("SCONS_CACHE")
+if scons_cache_path != None:
+    CacheDir(scons_cache_path)
+    print("Scons cache enabled... (path: '" + scons_cache_path + "')")
 
-copy = env.Install("{}/bin/{}/".format(projectdir, env["platform"]), library)
+# Create the library target (e.g. libexample.linux.debug.x86_64.so).
+debug_or_release = "release" if env["target"] == "template_release" else "debug"
+if env["platform"] == "macos":
+    library = env.SharedLibrary(
+        "{0}/bin/lib{1}.{2}.{3}.framework/{1}.{2}.{3}".format(
+            addon_path,
+            project_name,
+            env["platform"],
+            debug_or_release,
+        ),
+        source=sources,
+    )
+else:
+    library = env.SharedLibrary(
+        "{}/bin/lib{}.{}.{}.{}{}".format(
+            addon_path,
+            project_name,
+            env["platform"],
+            debug_or_release,
+            env["arch"],
+            env["SHLIBSUFFIX"],
+        ),
+        source=sources,
+    )
 
-default_args = [library, copy]
-Default(*default_args)
+Default(library)
