@@ -110,7 +110,7 @@ jobs:
         shell: bash
         run: |
           for addon in ${{ github.workspace }}/project/addons/*/; do
-            cp --no-clobber '${{ github.workspace }}/README.md' '${{ github.workspace }}/LICENSE' "$addon"
+            cp --no-clobber '${{ github.workspace }}/README.md' '${{ github.workspace }}/LICENSE.md' "$addon"
           done
           mkdir --parents ${{ github.workspace }}/github-artifact/${{ github.event.repository.name }}-${{ github.sha }}/
           mv ${{ github.workspace }}/project/addons/ ${{ github.workspace }}/github-artifact/${{ github.event.repository.name }}-${{ github.sha }}/
