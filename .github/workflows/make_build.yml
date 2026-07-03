@@ -125,7 +125,7 @@ jobs:
         run: |
           set -e
           base=package/addons/icy-radio-streamer
-          mkdir -p "$base"/{macos,ios,windows,linux,android,web}
+          mkdir -p "$base/macos" "$base/ios" "$base/windows" "$base/linux" "$base/android" "$base/web"
 
           cd staging
           for f in *; do
